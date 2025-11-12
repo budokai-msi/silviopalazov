@@ -464,6 +464,8 @@
             varying vec3 vPosition;
             uniform float time;
             uniform vec2 resolution;
+            uniform vec2 mouse;
+            uniform vec2 mouseVelocity;
 
             // High-quality gradient noise function
             vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
@@ -496,10 +498,35 @@
             void main() {
                 vec2 uv = vUv;
 
-                // Multi-octave noise for complexity
-                float noise1 = snoise(uv * 3.0 + time * 0.1);
-                float noise2 = snoise(uv * 6.0 - time * 0.15);
-                float noise3 = snoise(uv * 12.0 + time * 0.2);
+                // Calculate distance from mouse
+                vec2 mouseUV = mouse * 0.5 + 0.5; // Convert from -1,1 to 0,1
+                float distToMouse = length(uv - mouseUV);
+
+                // Mouse influence radius
+                float influenceRadius = 0.3;
+                float mouseInfluence = smoothstep(influenceRadius, 0.0, distToMouse);
+
+                // Direction from mouse to pixel
+                vec2 mouseDir = normalize(uv - mouseUV);
+
+                // Apply fluid displacement based on mouse velocity and distance
+                vec2 displacement = mouseDir * mouseInfluence * length(mouseVelocity) * 0.5;
+
+                // Swirl effect around mouse
+                float angle = atan(mouseDir.y, mouseDir.x);
+                float swirlStrength = mouseInfluence * length(mouseVelocity) * 0.3;
+                vec2 swirl = vec2(
+                    cos(angle + swirlStrength),
+                    sin(angle + swirlStrength)
+                ) * mouseInfluence * 0.05;
+
+                // Apply displacement to UV
+                vec2 displacedUV = uv + displacement + swirl;
+
+                // Multi-octave noise for complexity with mouse distortion
+                float noise1 = snoise(displacedUV * 3.0 + time * 0.1);
+                float noise2 = snoise(displacedUV * 6.0 - time * 0.15);
+                float noise3 = snoise(displacedUV * 12.0 + time * 0.2);
 
                 float combinedNoise = noise1 * 0.5 + noise2 * 0.3 + noise3 * 0.2;
 
@@ -509,8 +536,8 @@
                 vec3 color3 = vec3(0.5, 0.0, 1.0);  // Purple
 
                 // Smooth color mixing based on position and noise
-                float mixFactor1 = smoothstep(-1.0, 1.0, sin(uv.x * 3.14159 + time * 0.3));
-                float mixFactor2 = smoothstep(-1.0, 1.0, sin(uv.y * 3.14159 - time * 0.2));
+                float mixFactor1 = smoothstep(-1.0, 1.0, sin(displacedUV.x * 3.14159 + time * 0.3));
+                float mixFactor2 = smoothstep(-1.0, 1.0, sin(displacedUV.y * 3.14159 - time * 0.2));
 
                 vec3 color = mix(color1, color2, mixFactor1);
                 color = mix(color, color3, mixFactor2);
@@ -518,12 +545,16 @@
                 // Add noise variation
                 color += combinedNoise * 0.15;
 
+                // Add mouse glow effect
+                vec3 mouseGlow = vec3(1.0, 1.0, 1.0) * mouseInfluence * 0.2;
+                color += mouseGlow;
+
                 // Vignette effect for depth
                 float vignette = 1.0 - length(uv - 0.5) * 0.8;
                 color *= vignette;
 
-                // Final opacity with smooth falloff
-                float alpha = 0.15 + combinedNoise * 0.05;
+                // Final opacity with smooth falloff, brighter near mouse
+                float alpha = 0.15 + combinedNoise * 0.05 + mouseInfluence * 0.1;
 
                 gl_FragColor = vec4(color, alpha);
             }
@@ -535,7 +566,9 @@
             fragmentShader: fragmentShader,
             uniforms: {
                 time: { value: 0 },
-                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+                mouse: { value: new THREE.Vector2(0, 0) },
+                mouseVelocity: { value: new THREE.Vector2(0, 0) }
             },
             transparent: true,
             side: THREE.DoubleSide
@@ -564,6 +597,9 @@
 
             time += 0.01;
             shaderMaterial.uniforms.time.value = time;
+
+            // Update mouse velocity decay for fluid physics
+            updateMouseVelocity();
 
             // Smooth camera movement
             camera.position.x = Math.sin(time * 0.1) * 0.5;
@@ -644,14 +680,37 @@
         // ==================== MOUSE MOVEMENT INTERACTION ====================
         let mouseX = 0;
         let mouseY = 0;
+        let prevMouseX = 0;
+        let prevMouseY = 0;
+        let mouseVelX = 0;
+        let mouseVelY = 0;
 
         document.addEventListener('mousemove', (e) => {
-            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            const newMouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const newMouseY = -(e.clientY / window.innerHeight) * 2 + 1;
 
+            // Calculate velocity (difference between current and previous position)
+            mouseVelX = newMouseX - mouseX;
+            mouseVelY = newMouseY - mouseY;
+
+            mouseX = newMouseX;
+            mouseY = newMouseY;
+
+            // Update shader uniforms
+            shaderMaterial.uniforms.mouse.value.set(mouseX, mouseY);
+            shaderMaterial.uniforms.mouseVelocity.value.set(mouseVelX * 10, mouseVelY * 10);
+
+            // Smooth camera movement
             camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
             camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
         });
+
+        // Decay mouse velocity over time for smooth trailing effect
+        function updateMouseVelocity() {
+            mouseVelX *= 0.95;
+            mouseVelY *= 0.95;
+            shaderMaterial.uniforms.mouseVelocity.value.set(mouseVelX * 10, mouseVelY * 10);
+        }
     </script>
 </body>
 </html>
