@@ -7,90 +7,34 @@
     <meta name="description" content="Experience AI workflow automation, intelligent synchronization, and interactive creative tools by Silvio Palazov">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-bg: #000000;
+            --color-text: #ffffff;
+            --color-primary: #00ffff;
+            --color-secondary: #ff00ff;
+            --color-accent: #ffff00;
+        }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0a0a0f;
-            color: #ffffff;
+            background: var(--color-bg);
+            color: var(--color-text);
             overflow-x: hidden;
-            cursor: none;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        /* Custom Cursor with Magnetic Effect */
-        .cursor {
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(0, 255, 255, 0.8);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 10000;
-            transition: width 0.2s, height 0.2s, border-color 0.2s;
-            mix-blend-mode: difference;
-        }
-        .cursor.hover {
-            width: 40px;
-            height: 40px;
-            border-color: rgba(255, 0, 255, 0.8);
-        }
-        .cursor-trail {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            background: rgba(255, 0, 255, 0.6);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-
-        /* Shader-like Background Effect */
-        .shader-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            background:
-                radial-gradient(circle at 20% 50%, rgba(0, 255, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 0, 255, 0.15) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 0, 0.1) 0%, transparent 50%);
-            filter: blur(60px);
-            animation: shaderPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes shaderPulse {
-            0%, 100% {
-                transform: scale(1) rotate(0deg);
-                opacity: 0.6;
-            }
-            50% {
-                transform: scale(1.1) rotate(5deg);
-                opacity: 0.8;
-            }
-        }
-
-        /* Parallax Layers */
-        .parallax-layer {
-            position: fixed;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-
-        .parallax-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(40px);
-            opacity: 0.3;
-        }
-
-        /* Fluid Canvas Background */
-        #fluidCanvas {
+        /* WebGL Canvas */
+        #webgl-canvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -99,66 +43,10 @@
             z-index: 0;
         }
 
-        /* Particle Network Canvas */
-        #particleCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        /* Audio Visualizer */
-        #audioCanvas {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 200px;
-            z-index: 2;
-            pointer-events: none;
-            opacity: 0.6;
-        }
-
-        .audio-controls {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1001;
-            display: flex;
-            gap: 12px;
-        }
-
-        .audio-btn {
-            padding: 12px 24px;
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            border-radius: 8px;
-            color: white;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.3s;
-            backdrop-filter: blur(10px);
-        }
-
-        .audio-btn:hover {
-            background: rgba(0, 255, 255, 0.2);
-            border-color: rgba(0, 255, 255, 0.6);
-        }
-
-        .audio-btn.active {
-            background: rgba(0, 255, 255, 0.3);
-            border-color: #00ffff;
-        }
-
         /* Main Container */
         .container {
             position: relative;
             z-index: 10;
-            min-height: 100vh;
         }
 
         /* Navigation */
@@ -167,20 +55,22 @@
             top: 0;
             left: 0;
             right: 0;
-            padding: 24px 48px;
+            padding: 32px 64px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(10, 10, 15, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             z-index: 1000;
         }
 
         .logo {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
-            background: linear-gradient(135deg, #00ffff, #ff00ff, #ffff00);
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -188,27 +78,32 @@
 
         .nav-links {
             display: flex;
-            gap: 32px;
+            gap: 48px;
         }
 
         .nav-link {
-            position: relative;
-            color: rgba(255, 255, 255, 0.8);
+            color: rgba(255, 255, 255, 0.7);
             text-decoration: none;
             font-size: 14px;
             font-weight: 500;
-            transition: color 0.3s;
+            letter-spacing: -0.2px;
+            transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: rgba(255, 255, 255, 1);
         }
 
         .nav-link::after {
             content: '';
             position: absolute;
-            bottom: -4px;
+            bottom: -8px;
             left: 0;
             width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #00ffff, #ff00ff);
-            transition: width 0.3s;
+            height: 1px;
+            background: linear-gradient(90deg, var(--color-primary), var(--color-secondary));
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .nav-link:hover::after {
@@ -222,199 +117,189 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 120px 48px 48px;
             text-align: center;
+            padding: 120px 48px 48px;
         }
 
         .hero-title {
-            font-size: clamp(48px, 8vw, 96px);
-            font-weight: 700;
-            line-height: 1.1;
-            margin-bottom: 24px;
-            background: linear-gradient(135deg, #00ffff 0%, #ff00ff 50%, #ffff00 100%);
-            background-size: 200% 200%;
+            font-size: clamp(56px, 10vw, 128px);
+            font-weight: 900;
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #ffffff 0%, rgba(255, 255, 255, 0.5) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: gradientShift 8s ease infinite;
             opacity: 0;
-            transform: translateY(30px);
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            transform: translateY(40px);
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .hero-subtitle {
-            font-size: clamp(18px, 2.5vw, 24px);
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 700px;
+            font-size: clamp(18px, 2vw, 24px);
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.6);
+            max-width: 600px;
             line-height: 1.6;
+            letter-spacing: -0.01em;
             margin-bottom: 48px;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
         }
 
         .hero-cta {
-            display: inline-flex;
-            gap: 24px;
+            display: flex;
+            gap: 16px;
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(40px);
+            animation: fadeInUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
         }
 
         .btn {
             padding: 16px 32px;
             border-radius: 12px;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 600;
+            letter-spacing: -0.2px;
             text-decoration: none;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.2s;
             border: none;
             cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
             color: #000;
+            box-shadow: 0 8px 32px rgba(0, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 255, 255, 0.4);
         }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
-            border: 1px solid rgba(0, 255, 255, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
         }
 
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.3);
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .btn:hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
-        /* Features Grid */
+        /* Features Section */
         .features {
-            padding: 120px 48px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 32px;
+            padding: 160px 64px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 32px;
+        }
+
         .feature-card {
             background: rgba(255, 255, 255, 0.02);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: 24px;
-            padding: 40px;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.3s, border-color 0.3s;
+            padding: 48px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             opacity: 0;
-            transform: translateY(50px);
+            transform: translateY(60px);
         }
 
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, #00ffff, transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .feature-card:hover::before {
+        .feature-card.visible {
             opacity: 1;
+            transform: translateY(0);
+        }
+
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-8px);
         }
 
         .feature-icon {
-            font-size: 48px;
+            font-size: 40px;
             margin-bottom: 24px;
-            display: inline-block;
-            transition: transform 0.3s;
-        }
-
-        .feature-card:hover .feature-icon {
-            transform: scale(1.1) rotate(5deg);
+            display: block;
         }
 
         .feature-title {
             font-size: 24px;
-            font-weight: 600;
+            font-weight: 700;
+            letter-spacing: -0.02em;
             margin-bottom: 16px;
-            color: #00ffff;
+            background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .feature-description {
             font-size: 16px;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.5);
+            letter-spacing: -0.01em;
         }
 
         /* Stats Section */
         .stats {
-            padding: 120px 48px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 48px;
+            padding: 160px 64px;
             max-width: 1200px;
             margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 64px;
         }
 
         .stat-card {
             text-align: center;
             opacity: 0;
-            transform: scale(0.8);
+            transform: scale(0.9);
+        }
+
+        .stat-card.visible {
+            animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         .stat-number {
-            font-size: 56px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #00ffff, #ff00ff);
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
+            display: block;
         }
 
         .stat-label {
             font-size: 14px;
+            font-weight: 500;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.4);
         }
 
         /* Animations */
-        .fade-in {
-            animation: fadeIn 1s ease forwards;
-        }
-
-        @keyframes fadeIn {
+        @keyframes fadeInUp {
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .scale-in {
-            animation: scaleIn 0.8s ease forwards;
         }
 
         @keyframes scaleIn {
@@ -424,64 +309,47 @@
             }
         }
 
-        /* Spring Animation Class */
-        .spring-bounce {
-            animation: springBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-        }
-
-        @keyframes springBounce {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
-            .audio-controls {
-                bottom: 10px;
-                right: 10px;
+            nav {
+                padding: 24px 32px;
             }
-            .audio-btn {
-                padding: 8px 16px;
-                font-size: 12px;
+
+            .nav-links {
+                gap: 24px;
+            }
+
+            .hero {
+                padding: 100px 32px 32px;
+            }
+
+            .features,
+            .stats {
+                padding: 100px 32px;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card {
+                padding: 32px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Shader-like Background Layer -->
-    <div class="shader-layer"></div>
-
-    <!-- Parallax Layers -->
-    <div class="parallax-layer" id="parallax-back"></div>
-    <div class="parallax-layer" id="parallax-mid"></div>
-    <div class="parallax-layer" id="parallax-front"></div>
-
-    <!-- Fluid Canvas Background -->
-    <canvas id="fluidCanvas"></canvas>
-
-    <!-- Particle Network Canvas -->
-    <canvas id="particleCanvas"></canvas>
-
-    <!-- Audio Visualizer Canvas -->
-    <canvas id="audioCanvas"></canvas>
-
-    <!-- Audio Controls -->
-    <div class="audio-controls">
-        <button class="audio-btn" id="startAudio">🎵 Start Audio</button>
-        <button class="audio-btn" id="toggleMic">🎤 Microphone</button>
-    </div>
-
-    <!-- Custom Cursor -->
-    <div class="cursor" id="cursor"></div>
+    <!-- WebGL Canvas -->
+    <canvas id="webgl-canvas"></canvas>
 
     <!-- Navigation -->
     <nav>
-        <div class="logo">🚀 Silvio Palazov</div>
+        <div class="logo">SILVIO PALAZOV</div>
         <div class="nav-links">
-            <a href="#" class="nav-link magnetic">Home</a>
-            <a href="#" class="nav-link magnetic">AI Automation</a>
-            <a href="#" class="nav-link magnetic">Canvas</a>
-            <a href="#" class="nav-link magnetic">Research</a>
+            <a href="#" class="nav-link">Home</a>
+            <a href="#" class="nav-link">AI Automation</a>
+            <a href="#" class="nav-link">Canvas</a>
+            <a href="#" class="nav-link">Research</a>
         </div>
     </nav>
 
@@ -489,512 +357,252 @@
     <div class="container">
         <!-- Hero Section -->
         <section class="hero">
-            <h1 class="hero-title">Innovation Unleashed</h1>
+            <h1 class="hero-title">Innovation<br>Unleashed</h1>
             <p class="hero-subtitle">
                 Experience the future of AI-powered workflow automation with cutting-edge
                 technology that transforms how you work and create.
             </p>
             <div class="hero-cta">
-                <button class="btn btn-primary magnetic">Get Started</button>
-                <button class="btn btn-secondary magnetic">Learn More</button>
+                <button class="btn btn-primary">Get Started</button>
+                <button class="btn btn-secondary">Learn More</button>
             </div>
         </section>
 
         <!-- Features Section -->
         <section class="features">
-            <div class="feature-card magnetic">
-                <div class="feature-icon">🤖</div>
-                <h3 class="feature-title">AI Workflow Automation</h3>
-                <p class="feature-description">
-                    Intelligent process orchestration with real-time synchronization across platforms.
-                    Automate complex workflows with predictive intelligence.
-                </p>
-            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <h3 class="feature-title">AI Workflow Automation</h3>
+                    <p class="feature-description">
+                        Intelligent process orchestration with real-time synchronization across platforms.
+                        Automate complex workflows with predictive intelligence.
+                    </p>
+                </div>
 
-            <div class="feature-card magnetic">
-                <div class="feature-icon">🎨</div>
-                <h3 class="feature-title">Interactive Creative Canvas</h3>
-                <p class="feature-description">
-                    AI-powered drawing platform with open API integrations. Create art with
-                    intelligent assistance and dynamic suggestions.
-                </p>
-            </div>
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <h3 class="feature-title">Interactive Creative Canvas</h3>
+                    <p class="feature-description">
+                        AI-powered drawing platform with open API integrations. Create art with
+                        intelligent assistance and dynamic suggestions.
+                    </p>
+                </div>
 
-            <div class="feature-card magnetic">
-                <div class="feature-icon">📊</div>
-                <h3 class="feature-title">Research & Insights</h3>
-                <p class="feature-description">
-                    Deep-dive research on productivity systems and enterprise optimization
-                    frameworks powered by advanced analytics.
-                </p>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <h3 class="feature-title">Research & Insights</h3>
+                    <p class="feature-description">
+                        Deep-dive research on productivity systems and enterprise optimization
+                        frameworks powered by advanced analytics.
+                    </p>
+                </div>
             </div>
         </section>
 
         <!-- Stats Section -->
         <section class="stats">
             <div class="stat-card">
-                <div class="stat-number" data-target="847">0</div>
-                <div class="stat-label">Workflows Automated</div>
+                <span class="stat-number" data-target="847">0</span>
+                <span class="stat-label">Workflows Automated</span>
             </div>
             <div class="stat-card">
-                <div class="stat-number" data-target="2400">0</div>
-                <div class="stat-label">Hours Saved Daily</div>
+                <span class="stat-number" data-target="2400">0</span>
+                <span class="stat-label">Hours Saved Daily</span>
             </div>
             <div class="stat-card">
-                <div class="stat-number" data-target="99.9">0</div>
-                <div class="stat-label">Sync Accuracy %</div>
+                <span class="stat-number" data-target="99.9">0</span>
+                <span class="stat-label">Sync Accuracy %</span>
             </div>
             <div class="stat-card">
-                <div class="stat-number" data-target="15">0</div>
-                <div class="stat-label">API Integrations</div>
+                <span class="stat-number" data-target="15">0</span>
+                <span class="stat-label">API Integrations</span>
             </div>
         </section>
     </div>
 
+    <!-- Three.js Library (Open Source) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
     <script>
-        // ==================== SPRING PHYSICS SYSTEM ====================
-        class SpringPhysics {
-            constructor(stiffness = 0.1, damping = 0.8) {
-                this.stiffness = stiffness;
-                this.damping = damping;
-                this.velocity = { x: 0, y: 0 };
-                this.current = { x: 0, y: 0 };
-            }
-
-            update(target) {
-                // Hooke's Law: F = -kx
-                const forceX = (target.x - this.current.x) * this.stiffness;
-                const forceY = (target.y - this.current.y) * this.stiffness;
-
-                // Apply damping
-                this.velocity.x = this.velocity.x * this.damping + forceX;
-                this.velocity.y = this.velocity.y * this.damping + forceY;
-
-                // Update position
-                this.current.x += this.velocity.x;
-                this.current.y += this.velocity.y;
-
-                return this.current;
-            }
-        }
-
-        // ==================== MAGNETIC CURSOR SYSTEM ====================
-        const cursor = document.getElementById('cursor');
-        const cursorTrails = [];
-        const springSystem = new SpringPhysics(0.15, 0.7);
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-        let hoveredElement = null;
-
-        // Create cursor trails
-        for (let i = 0; i < 5; i++) {
-            const trail = document.createElement('div');
-            trail.className = 'cursor-trail';
-            document.body.appendChild(trail);
-            cursorTrails.push({
-                element: trail,
-                spring: new SpringPhysics(0.1 - i * 0.015, 0.75)
-            });
-        }
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
+        // ==================== THREE.JS WEBGL SCENE ====================
+        const canvas = document.getElementById('webgl-canvas');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({
+            canvas: canvas,
+            antialias: true,
+            alpha: true
         });
 
-        // Magnetic elements
-        const magneticElements = document.querySelectorAll('.magnetic');
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-        magneticElements.forEach(el => {
-            el.addEventListener('mouseenter', () => {
-                hoveredElement = el;
-                cursor.classList.add('hover');
-            });
+        camera.position.z = 5;
 
-            el.addEventListener('mouseleave', () => {
-                hoveredElement = null;
-                cursor.classList.remove('hover');
-                el.style.transform = '';
-            });
+        // ==================== CUSTOM GLSL SHADERS ====================
+        const vertexShader = `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            uniform float time;
 
-            el.addEventListener('mousemove', (e) => {
-                const rect = el.getBoundingClientRect();
-                const x = e.clientX - rect.left - rect.width / 2;
-                const y = e.clientY - rect.top - rect.height / 2;
+            void main() {
+                vUv = uv;
+                vPosition = position;
 
-                // Magnetic attraction effect
-                const distance = Math.sqrt(x * x + y * y);
-                const maxDistance = 100;
+                vec3 pos = position;
+                float wave = sin(pos.x * 2.0 + time) * 0.1;
+                pos.z += wave;
 
-                if (distance < maxDistance) {
-                    const force = (1 - distance / maxDistance) * 0.3;
-                    el.style.transform = `translate(${x * force}px, ${y * force}px)`;
-                }
-            });
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);
+            }
+        `;
+
+        const fragmentShader = `
+            varying vec2 vUv;
+            varying vec3 vPosition;
+            uniform float time;
+            uniform vec2 resolution;
+
+            // High-quality gradient noise function
+            vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
+            vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
+
+            float snoise(vec2 v) {
+                const vec4 C = vec4(0.211324865405187, 0.366025403784439, -0.577350269189626, 0.024390243902439);
+                vec2 i  = floor(v + dot(v, C.yy));
+                vec2 x0 = v -   i + dot(i, C.xx);
+                vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
+                vec4 x12 = x0.xyxy + C.xxzz;
+                x12.xy -= i1;
+                i = mod289(i);
+                vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
+                vec3 m = max(0.5 - vec3(dot(x0,x0), dot(x12.xy,x12.xy), dot(x12.zw,x12.zw)), 0.0);
+                m = m*m;
+                m = m*m;
+                vec3 x = 2.0 * fract(p * C.www) - 1.0;
+                vec3 h = abs(x) - 0.5;
+                vec3 ox = floor(x + 0.5);
+                vec3 a0 = x - ox;
+                m *= 1.79284291400159 - 0.85373472095314 * (a0*a0 + h*h);
+                vec3 g;
+                g.x  = a0.x  * x0.x  + h.x  * x0.y;
+                g.yz = a0.yz * x12.xz + h.yz * x12.yw;
+                return 130.0 * dot(m, g);
+            }
+
+            void main() {
+                vec2 uv = vUv;
+
+                // Multi-octave noise for complexity
+                float noise1 = snoise(uv * 3.0 + time * 0.1);
+                float noise2 = snoise(uv * 6.0 - time * 0.15);
+                float noise3 = snoise(uv * 12.0 + time * 0.2);
+
+                float combinedNoise = noise1 * 0.5 + noise2 * 0.3 + noise3 * 0.2;
+
+                // HD gradient colors
+                vec3 color1 = vec3(0.0, 1.0, 1.0);  // Cyan
+                vec3 color2 = vec3(1.0, 0.0, 1.0);  // Magenta
+                vec3 color3 = vec3(0.5, 0.0, 1.0);  // Purple
+
+                // Smooth color mixing based on position and noise
+                float mixFactor1 = smoothstep(-1.0, 1.0, sin(uv.x * 3.14159 + time * 0.3));
+                float mixFactor2 = smoothstep(-1.0, 1.0, sin(uv.y * 3.14159 - time * 0.2));
+
+                vec3 color = mix(color1, color2, mixFactor1);
+                color = mix(color, color3, mixFactor2);
+
+                // Add noise variation
+                color += combinedNoise * 0.15;
+
+                // Vignette effect for depth
+                float vignette = 1.0 - length(uv - 0.5) * 0.8;
+                color *= vignette;
+
+                // Final opacity with smooth falloff
+                float alpha = 0.15 + combinedNoise * 0.05;
+
+                gl_FragColor = vec4(color, alpha);
+            }
+        `;
+
+        // Create shader material
+        const shaderMaterial = new THREE.ShaderMaterial({
+            vertexShader: vertexShader,
+            fragmentShader: fragmentShader,
+            uniforms: {
+                time: { value: 0 },
+                resolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) }
+            },
+            transparent: true,
+            side: THREE.DoubleSide
         });
 
-        function animateCursor() {
-            // Apply spring physics to cursor
-            const target = { x: mouseX, y: mouseY };
-            const pos = springSystem.update(target);
+        // Create large plane mesh for background
+        const geometry = new THREE.PlaneGeometry(20, 20, 64, 64);
+        const mesh = new THREE.Mesh(geometry, shaderMaterial);
+        scene.add(mesh);
 
-            cursor.style.left = pos.x + 'px';
-            cursor.style.top = pos.y + 'px';
+        // Add multiple layers for depth
+        const mesh2 = mesh.clone();
+        mesh2.position.z = -2;
+        mesh2.rotation.z = Math.PI / 6;
+        scene.add(mesh2);
 
-            // Animate trails with spring physics
-            cursorTrails.forEach((trail, index) => {
-                const trailPos = trail.spring.update(pos);
-                trail.element.style.left = trailPos.x + 'px';
-                trail.element.style.top = trailPos.y + 'px';
-            });
+        const mesh3 = mesh.clone();
+        mesh3.position.z = -4;
+        mesh3.rotation.z = -Math.PI / 6;
+        scene.add(mesh3);
 
-            requestAnimationFrame(animateCursor);
+        // ==================== ANIMATION LOOP ====================
+        let time = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+
+            time += 0.01;
+            shaderMaterial.uniforms.time.value = time;
+
+            // Smooth camera movement
+            camera.position.x = Math.sin(time * 0.1) * 0.5;
+            camera.position.y = Math.cos(time * 0.15) * 0.3;
+            camera.lookAt(scene.position);
+
+            // Rotate meshes slowly
+            mesh.rotation.z = time * 0.05;
+            mesh2.rotation.z = -time * 0.03;
+            mesh3.rotation.z = time * 0.04;
+
+            renderer.render(scene, camera);
         }
-        animateCursor();
+        animate();
 
-        // ==================== PARALLAX LAYERS ====================
-        const parallaxBack = document.getElementById('parallax-back');
-        const parallaxMid = document.getElementById('parallax-mid');
-        const parallaxFront = document.getElementById('parallax-front');
-
-        // Create parallax orbs
-        function createParallaxOrbs(container, count, color, sizeRange) {
-            for (let i = 0; i < count; i++) {
-                const orb = document.createElement('div');
-                orb.className = 'parallax-orb';
-                orb.style.width = Math.random() * sizeRange.max + sizeRange.min + 'px';
-                orb.style.height = orb.style.width;
-                orb.style.left = Math.random() * 100 + '%';
-                orb.style.top = Math.random() * 100 + '%';
-                orb.style.background = color;
-                container.appendChild(orb);
-            }
-        }
-
-        createParallaxOrbs(parallaxBack, 3, 'rgba(0, 255, 255, 0.1)', { min: 100, max: 200 });
-        createParallaxOrbs(parallaxMid, 3, 'rgba(255, 0, 255, 0.1)', { min: 80, max: 150 });
-        createParallaxOrbs(parallaxFront, 3, 'rgba(255, 255, 0, 0.1)', { min: 60, max: 120 });
-
-        window.addEventListener('scroll', () => {
-            const scrollY = window.scrollY;
-            parallaxBack.style.transform = `translateY(${scrollY * 0.1}px)`;
-            parallaxMid.style.transform = `translateY(${scrollY * 0.3}px)`;
-            parallaxFront.style.transform = `translateY(${scrollY * 0.5}px)`;
-        });
-
-        // ==================== FLUID CANVAS BACKGROUND ====================
-        const fluidCanvas = document.getElementById('fluidCanvas');
-        const fluidCtx = fluidCanvas.getContext('2d');
-
-        function resizeFluidCanvas() {
-            fluidCanvas.width = window.innerWidth;
-            fluidCanvas.height = window.innerHeight;
-        }
-        resizeFluidCanvas();
-        window.addEventListener('resize', resizeFluidCanvas);
-
-        const fluidParticles = [];
-        for (let i = 0; i < 50; i++) {
-            fluidParticles.push({
-                x: Math.random() * fluidCanvas.width,
-                y: Math.random() * fluidCanvas.height,
-                radius: Math.random() * 100 + 50,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                color: i % 3 === 0 ? '0, 255, 255' : i % 3 === 1 ? '255, 0, 255' : '255, 255, 0',
-                spring: new SpringPhysics(0.05, 0.9)
-            });
-        }
-
-        function animateFluid() {
-            fluidCtx.fillStyle = 'rgba(10, 10, 15, 0.1)';
-            fluidCtx.fillRect(0, 0, fluidCanvas.width, fluidCanvas.height);
-
-            fluidParticles.forEach(particle => {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-
-                if (particle.x < 0 || particle.x > fluidCanvas.width) particle.vx *= -1;
-                if (particle.y < 0 || particle.y > fluidCanvas.height) particle.vy *= -1;
-
-                // Mouse interaction with spring physics
-                const dx = mouseX - particle.x;
-                const dy = mouseY - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 200) {
-                    const force = (1 - distance / 200) * 3;
-                    particle.vx -= dx / distance * force * 0.01;
-                    particle.vy -= dy / distance * force * 0.01;
-                }
-
-                const gradient = fluidCtx.createRadialGradient(
-                    particle.x, particle.y, 0,
-                    particle.x, particle.y, particle.radius
-                );
-                gradient.addColorStop(0, `rgba(${particle.color}, 0.3)`);
-                gradient.addColorStop(1, `rgba(${particle.color}, 0)`);
-
-                fluidCtx.fillStyle = gradient;
-                fluidCtx.beginPath();
-                fluidCtx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-                fluidCtx.fill();
-            });
-
-            requestAnimationFrame(animateFluid);
-        }
-        animateFluid();
-
-        // ==================== PARTICLE NETWORK ====================
-        const particleCanvas = document.getElementById('particleCanvas');
-        const particleCtx = particleCanvas.getContext('2d');
-
-        function resizeParticleCanvas() {
-            particleCanvas.width = window.innerWidth;
-            particleCanvas.height = window.innerHeight;
-        }
-        resizeParticleCanvas();
-        window.addEventListener('resize', resizeParticleCanvas);
-
-        const particles = [];
-        const particleCount = 100;
-
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
-                x: Math.random() * particleCanvas.width,
-                y: Math.random() * particleCanvas.height,
-                vx: (Math.random() - 0.5) * 0.8,
-                vy: (Math.random() - 0.5) * 0.8,
-                radius: Math.random() * 2 + 1,
-                spring: new SpringPhysics(0.08, 0.85)
-            });
-        }
-
-        function animateParticles() {
-            particleCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
-
-            particles.forEach((particle, i) => {
-                particle.x += particle.vx;
-                particle.y += particle.vy;
-
-                if (particle.x < 0 || particle.x > particleCanvas.width) particle.vx *= -1;
-                if (particle.y < 0 || particle.y > particleCanvas.height) particle.vy *= -1;
-
-                // Mouse interaction with spring physics
-                const dx = mouseX - particle.x;
-                const dy = mouseY - particle.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 150) {
-                    particle.x -= dx / distance * 2;
-                    particle.y -= dy / distance * 2;
-                }
-
-                particleCtx.fillStyle = 'rgba(0, 255, 255, 0.8)';
-                particleCtx.beginPath();
-                particleCtx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
-                particleCtx.fill();
-
-                // Draw connections
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[j].x - particle.x;
-                    const dy = particles[j].y - particle.y;
-                    const distance = Math.sqrt(dx * dx + dy * dy);
-
-                    if (distance < 120) {
-                        particleCtx.strokeStyle = `rgba(0, 255, 255, ${0.2 * (1 - distance / 120)})`;
-                        particleCtx.lineWidth = 0.5;
-                        particleCtx.beginPath();
-                        particleCtx.moveTo(particle.x, particle.y);
-                        particleCtx.lineTo(particles[j].x, particles[j].y);
-                        particleCtx.stroke();
-                    }
-                }
-            });
-
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
-
-        // ==================== AUDIO VISUALIZER ====================
-        const audioCanvas = document.getElementById('audioCanvas');
-        const audioCtx = audioCanvas.getContext('2d');
-        let audioContext, analyser, dataArray, bufferLength;
-        let audioSource = null;
-        let isAudioActive = false;
-
-        function resizeAudioCanvas() {
-            audioCanvas.width = window.innerWidth;
-            audioCanvas.height = 200;
-        }
-        resizeAudioCanvas();
-        window.addEventListener('resize', resizeAudioCanvas);
-
-        function initAudio() {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            analyser = audioContext.createAnalyser();
-            analyser.fftSize = 256;
-            bufferLength = analyser.frequencyBinCount;
-            dataArray = new Uint8Array(bufferLength);
-
-            // Create oscillator for demo audio
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-
-            oscillator.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioContext.destination);
-
-            oscillator.start();
-            audioSource = oscillator;
-
-            // Add frequency modulation for interesting effect
-            setInterval(() => {
-                if (audioSource) {
-                    const freq = 200 + Math.random() * 600;
-                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
-                }
-            }, 100);
-        }
-
-        function drawVisualizer() {
-            if (!isAudioActive) return;
-
-            analyser.getByteFrequencyData(dataArray);
-
-            audioCtx.fillStyle = 'rgba(10, 10, 15, 0.2)';
-            audioCtx.fillRect(0, 0, audioCanvas.width, audioCanvas.height);
-
-            const barWidth = (audioCanvas.width / bufferLength) * 2.5;
-            let barHeight;
-            let x = 0;
-
-            for (let i = 0; i < bufferLength; i++) {
-                barHeight = (dataArray[i] / 255) * audioCanvas.height;
-
-                const gradient = audioCtx.createLinearGradient(0, audioCanvas.height - barHeight, 0, audioCanvas.height);
-                gradient.addColorStop(0, `rgb(0, ${255 * (dataArray[i] / 255)}, 255)`);
-                gradient.addColorStop(0.5, `rgb(${255 * (dataArray[i] / 255)}, 0, 255)`);
-                gradient.addColorStop(1, `rgb(255, 255, 0)`);
-
-                audioCtx.fillStyle = gradient;
-                audioCtx.fillRect(x, audioCanvas.height - barHeight, barWidth, barHeight);
-
-                x += barWidth + 1;
-            }
-
-            requestAnimationFrame(drawVisualizer);
-        }
-
-        document.getElementById('startAudio').addEventListener('click', function() {
-            if (!isAudioActive) {
-                initAudio();
-                isAudioActive = true;
-                drawVisualizer();
-                this.classList.add('active');
-                this.textContent = '🎵 Stop Audio';
-            } else {
-                if (audioSource) {
-                    audioSource.stop();
-                    audioSource = null;
-                }
-                isAudioActive = false;
-                this.classList.remove('active');
-                this.textContent = '🎵 Start Audio';
-                audioCtx.clearRect(0, 0, audioCanvas.width, audioCanvas.height);
-            }
-        });
-
-        document.getElementById('toggleMic').addEventListener('click', async function() {
-            if (audioSource && audioSource !== 'microphone') {
-                audioSource.stop();
-            }
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                analyser.fftSize = 256;
-                bufferLength = analyser.frequencyBinCount;
-                dataArray = new Uint8Array(bufferLength);
-
-                const source = audioContext.createMediaStreamSource(stream);
-                source.connect(analyser);
-
-                audioSource = 'microphone';
-                isAudioActive = true;
-                drawVisualizer();
-                this.classList.add('active');
-                this.textContent = '🎤 Stop Mic';
-            } catch (err) {
-                console.error('Microphone access denied:', err);
-                alert('Microphone access required for this feature');
-            }
-        });
-
-        // ==================== 3D CARD TRANSFORMS ====================
-        const featureCards = document.querySelectorAll('.feature-card');
-
-        featureCards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-
-                const centerX = rect.width / 2;
-                const centerY = rect.height / 2;
-
-                const rotateX = (y - centerY) / 10;
-                const rotateY = (centerX - x) / 10;
-
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
-            });
-
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = '';
-            });
+        // ==================== RESIZE HANDLER ====================
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            shaderMaterial.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
         });
 
         // ==================== SCROLL ANIMATIONS ====================
         const observerOptions = {
-            threshold: 0.1,
+            threshold: 0.15,
             rootMargin: '0px 0px -100px 0px'
         };
 
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
+            entries.forEach((entry) => {
                 if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('fade-in');
-                    }, index * 100);
+                    entry.target.classList.add('visible');
                     observer.unobserve(entry.target);
                 }
             });
         }, observerOptions);
 
-        document.querySelectorAll('.feature-card, .hero-title, .hero-subtitle, .hero-cta').forEach(el => {
+        document.querySelectorAll('.feature-card, .stat-card').forEach(el => {
             observer.observe(el);
-        });
-
-        // Stats observer with spring bounce
-        const statsObserver = new IntersectionObserver((entries) => {
-            entries.forEach((entry, index) => {
-                if (entry.isIntersecting) {
-                    setTimeout(() => {
-                        entry.target.classList.add('spring-bounce');
-                        animateCounter(entry.target.querySelector('.stat-number'));
-                    }, index * 150);
-                    statsObserver.unobserve(entry.target);
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.stat-card').forEach(el => {
-            statsObserver.observe(el);
         });
 
         // ==================== COUNTER ANIMATION ====================
@@ -1014,6 +622,35 @@
                 }
             }, 16);
         }
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const number = entry.target.querySelector('.stat-number');
+                    if (number) {
+                        animateCounter(number);
+                    }
+                    entry.target.classList.add('visible');
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.stat-card').forEach(el => {
+            statsObserver.observe(el);
+        });
+
+        // ==================== MOUSE MOVEMENT INTERACTION ====================
+        let mouseX = 0;
+        let mouseY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+
+            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+            camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
+        });
     </script>
 </body>
 </html>
