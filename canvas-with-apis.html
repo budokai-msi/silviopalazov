@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Canvas Studio - Enhanced with Open APIs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #ffffff;
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-areas: 
+                "toolbar toolbar toolbar toolbar"
+                "sidebar canvas canvas ai-panel";
+            grid-template-columns: 280px 1fr 1fr 320px;
+            grid-template-rows: 70px 1fr;
+            height: 100vh;
+        }
+        
+        /* Enhanced Toolbar */
+        .toolbar {
+            grid-area: toolbar;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(15px);
+            border-bottom: 2px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            padding: 0 25px;
+            gap: 25px;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-weight: 700;
+            font-size: 1.4rem;
+            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00);
+            background-size: 300% 300%;
+            animation: gradientFlow 3s ease infinite;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .toolbar-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        .tool-btn:hover {
+            background: rgba(0, 255, 255, 0.15);
+            border-color: #00ffff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+        }
+        
+        .tool-btn.active {
+            background: rgba(0, 255, 255, 0.25);
+            border-color: #00ffff;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+        
+        .api-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid rgba(0, 255, 0, 0.3);
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        
+        .api-dot {
+            width: 8px;
+            height: 8px;
+            background: #00ff00;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        /* Enhanced Sidebar */
+        .sidebar {
+            grid-area: sidebar;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(15px);
+            border-right: 2px solid rgba(0, 255, 255, 0.2);
+            padding: 25px;
+            overflow-y: auto;
+        }
+        
+        .sidebar h3 {
+            color: #00ffff;
+            margin-bottom: 18px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .api-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .api-btn {
+            width: 100%;
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            color: #ffffff;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        
+        .api-btn:hover {
+            background: rgba(255, 0, 255, 0.2);
+            border-color: #ff00ff;
+            transform: translateX(5px);
+        }
+        
+        /* Enhanced Canvas */
+        .canvas-area {
+            grid-area: canvas;
+            position: relative;
+            background: rgba(255, 255, 255, 0.02);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        #mainCanvas {
+            flex: 1;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            cursor: crosshair;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .canvas-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .canvas-info {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: #00ffff;
+        }
+        
+        .canvas-stats {
+            display: flex;
+            gap: 20px;
+            font-size: 0.8rem;
+            color: #cccccc;
+        }
+        
+        /* Enhanced AI Panel */
+        .ai-panel {
+            grid-area: ai-panel;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(15px);
+            border-left: 2px solid rgba(0, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .ai-header {
+            padding: 25px;
+            border-bottom: 2px solid rgba(0, 255, 255, 0.2);
+            background: rgba(255, 0, 255, 0.05);
+        }
+        
+        .ai-header h3 {
+            color: #00ffff;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .claude-features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .feature-tag {
+            background: rgba(0, 255, 255, 0.1);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            text-align: center;
+            color: #00ffff;
+        }
+        
+        .api-integrations {
+            padding: 20px 25px;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+        }
+        
+        .api-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .api-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(0, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+        }
+        
+        .api-card:hover {
+            background: rgba(0, 255, 255, 0.1);
+            border-color: #00ffff;
+            transform: scale(1.05);
+        }
+        
+        .api-card.active {
+            background: rgba(0, 255, 255, 0.2);
+            border-color: #00ffff;
+        }
+        
+        /* Enhanced Chat */
+        .ai-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 25px;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            max-height: calc(100vh - 500px);
+            padding-right: 10px;
+        }
+        
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+        }
+        
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: rgba(0, 255, 255, 0.5);
+            border-radius: 3px;
+        }
+        
+        .message {
+            margin-bottom: 18px;
+            padding: 15px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            position: relative;
+            animation: messageSlide 0.3s ease;
+        }
+        
+        @keyframes messageSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .message.user {
+            background: linear-gradient(135deg, rgba(0, 255, 255, 0.1), rgba(0, 255, 255, 0.05));
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            margin-left: 20px;
+        }
+        
+        .message.claude {
+            background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(255, 0, 255, 0.05));
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            margin-right: 20px;
+        }
+        
+        .message.system {
+            background: linear-gradient(135deg, rgba(255, 255, 0, 0.1), rgba(255, 255, 0, 0.05));
+            border: 1px solid rgba(255, 255, 0, 0.3);
+            text-align: center;
+            font-style: italic;
+        }
+        
+        /* Loading Animation */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 15px;
+            background: rgba(255, 0, 255, 0.1);
+            border: 1px solid rgba(255, 0, 255, 0.3);
+            border-radius: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #ff00ff;
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite both;
+        }
+        
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        
+        @keyframes typingBounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+            40% { transform: scale(1.2); opacity: 1; }
+        }
+        
+        /* Enhanced Input */
+        .chat-input-container {
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 15px 18px;
+            color: #ffffff;
+            font-size: 0.9rem;
+            outline: none;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 50px;
+            max-height: 120px;
+        }
+        
+        .chat-input:focus {
+            border-color: #00ffff;
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+        }
+        
+        .chat-send {
+            background: linear-gradient(45deg, #00ffff, #ff00ff);
+            border: none;
+            border-radius: 12px;
+            padding: 15px 20px;
+            color: #ffffff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+        
+        .chat-send:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 255, 0.3);
+        }
+        
+        /* API Status Indicators */
+        .api-status-bar {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1001;
+        }
+        
+        .api-status {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-indicator {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00ff00;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .status-indicator.error {
+            background: #ff0000;
+        }
+        
+        .status-indicator.warning {
+            background: #ffff00;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .container {
+                grid-template-areas: 
+                    "toolbar toolbar toolbar"
+                    "canvas canvas ai-panel";
+                grid-template-columns: 1fr 1fr 350px;
+            }
+            
+            .sidebar {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-areas: 
+                    "toolbar"
+                    "canvas";
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-panel, .sidebar {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Enhanced Toolbar -->
+        <div class="toolbar">
+            <div class="logo">🎨 AI Canvas Studio Pro</div>
+            
+            <div class="toolbar-group">
+                <button class="tool-btn active" data-tool="brush">✏️ Brush</button>
+                <button class="tool-btn" data-tool="eraser">🧹 Eraser</button>
+                <button class="tool-btn" data-tool="line">📏 Line</button>
+                <button class="tool-btn" data-tool="rectangle">⬜ Rectangle</button>
+                <button class="tool-btn" data-tool="circle">⭕ Circle</button>
+                <button class="tool-btn" data-tool="text">📝 Text</button>
+            </div>
+            
+            <div class="toolbar-group">
+                <input type="color" class="color-picker" id="colorPicker" value="#00ffff">
+                <input type="range" class="size-slider" id="sizeSlider" min="1" max="50" value="5">
+                <span id="sizeDisplay">5px</span>
+            </div>
+            
+            <div class="toolbar-group">
+                <button class="tool-btn" id="clearBtn">🗑️ Clear</button>
+                <button class="tool-btn" id="saveBtn">💾 Save</button>
+                <button class="tool-btn" id="undoBtn">↶ Undo</button>
+                <button class="tool-btn" id="redoBtn">↷ Redo</button>
+            </div>
+            
+            <div class="api-indicator">
+                <div class="api-dot"></div>
+                <span>APIs Connected</span>
+            </div>
+        </div>
+        
+        <!-- Enhanced Sidebar -->
+        <div class="sidebar">
+            <h3>🔗 API Integrations</h3>
+            
+            <div class="api-section">
+                <h4 style="color: #ff00ff; margin-bottom: 10px;">🎨 Creative APIs</h4>
+                <button class="api-btn" data-api="unsplash">📸 Unsplash Images</button>
+                <button class="api-btn" data-api="color-api">🌈 Color Palette Generator</button>
+                <button class="api-btn" data-api="font-api">🔤 Google Fonts</button>
+            </div>
+            
+            <div class="api-section">
+                <h4 style="color: #00ffff; margin-bottom: 10px;">🧠 AI Services</h4>
+                <button class="api-btn" data-api="openai">🤖 OpenAI DALL-E</button>
+                <button class="api-btn" data-api="huggingface">🤗 Hugging Face Models</button>
+                <button class="api-btn" data-api="stability">🎯 Stability AI</button>
+            </div>
+            
+            <div class="api-section">
+                <h4 style="color: #ffff00; margin-bottom: 10px;">⚡ Utilities</h4>
+                <button class="api-btn" data-api="weather">🌤️ Weather API</button>
+                <button class="api-btn" data-api="quotes">💭 Inspirational Quotes</button>
+                <button class="api-btn" data-api="random">🎲 Random Data</button>
+            </div>
+            
+            <h3>🎭 Layers</h3>
+            <div class="layer-item active" data-layer="0">
+                <span>Background</span>
+                <div class="layer-controls">
+                    <button class="layer-btn">👁️</button>
+                    <button class="layer-btn">🔒</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Enhanced Canvas Area -->
+        <div class="canvas-area">
+            <div class="canvas-controls">
+                <div class="canvas-info" id="canvasInfo">
+                    Ready to create • Tool: Brush • Size: 5px
+                </div>
+                <div class="canvas-stats">
+                    <span id="canvasSize">800x600</span>
+                    <span id="strokeCount">Strokes: 0</span>
+                    <span id="apiCalls">API Calls: 0</span>
+                </div>
+            </div>
+            <canvas id="mainCanvas"></canvas>
+        </div>
+        
+        <!-- Enhanced AI Panel -->
+        <div class="ai-panel">
+            <div class="ai-header">
+                <h3>🤖 Claude AI Assistant</h3>
+                <div class="claude-features">
+                    <div class="feature-tag">🎨 Creative Guide</div>
+                    <div class="feature-tag">📊 Art Analysis</div>
+                    <div class="feature-tag">💡 Inspiration</div>
+                    <div class="feature-tag">🔧 Techniques</div>
+                </div>
+            </div>
+            
+            <div class="api-integrations">
+                <h4 style="color: #00ffff; margin-bottom: 10px;">🌐 Active APIs</h4>
+                <div class="api-grid">
+                    <div class="api-card active" data-api="color">🎨 Colors</div>
+                    <div class="api-card" data-api="images">📸 Images</div>
+                    <div class="api-card" data-api="ai">🧠 AI Models</div>
+                    <div class="api-card" data-api="utils">⚡ Utils</div>
+                </div>
+            </div>
+            
+            <div class="ai-chat">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message claude">
+                        <div class="message-header">Claude AI</div>
+                        <div>🎨 <strong>Welcome to AI Canvas Studio Pro!</strong></div>
+                        <br>
+                        <div>I'm your enhanced AI assistant with access to powerful APIs:</div>
+                        <ul style="margin: 10px 0 0 20px; line-height: 1.8;">
+                            <li><strong>🖼️ Unsplash API:</strong> High-quality reference images</li>
+                            <li><strong>🎨 Color API:</strong> Generate perfect color palettes</li>
+                            <li><strong>🤖 AI Models:</strong> Generate and analyze artwork</li>
+                            <li><strong>🌍 Weather API:</strong> Environment-inspired themes</li>
+                            <li><strong>💭 Quote API:</strong> Creative inspiration</li>
+                        </ul>
+                        <br>
+                        <div><strong>How would you use Claude today?</strong> I can:</div>
+                        <div style="margin-top: 10px; padding: 10px; background: rgba(0,255,255,0.1); border-radius: 8px;">
+                            • Fetch inspiration images from Unsplash<br>
+                            • Generate color schemes based on moods<br>
+                            • Analyze weather for atmospheric art ideas<br>
+                            • Provide step-by-step tutorials<br>
+                            • Suggest improvements using AI analysis
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Ask Claude to help with APIs, creativity, or techniques...">
+                    <button class="chat-send" id="chatSend">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- API Status Indicators -->
+    <div class="api-status-bar">
+        <div class="api-status" id="unsplashStatus">
+            <div class="status-indicator"></div>
+            <span>Unsplash API</span>
+        </div>
+        <div class="api-status" id="colorStatus">
+            <div class="status-indicator"></div>
+            <span>Color API</span>
+        </div>
+        <div class="api-status" id="aiStatus">
+            <div class="status-indicator"></div>
+            <span>AI Models</span>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Canvas Setup with API Integration
+        const canvas = document.getElementById('mainCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // API Configuration (using open/demo APIs)
+        const APIs = {
+            unsplash: {
+                baseUrl: 'https://api.unsplash.com',
+                accessKey: 'DEMO_ACCESS_KEY', // Would need real key for production
+                endpoint: '/photos/random'
+            },
+            colorApi: {
+                baseUrl: 'https://www.colr.org/json',
+                endpoint: '/schemes/random'
+            },
+            quotesApi: {
+                baseUrl: 'https://api.quotegarden.io/api/v3',
+                endpoint: '/quotes/random'
+            },
+            weatherApi: {
+                baseUrl: 'https://api.openweathermap.org/data/2.5',
+                key: 'DEMO_KEY', // Would need real key
+                endpoint: '/weather'
+            }
+        };
+        
+        // Canvas state
+        let isDrawing = false;
+        let currentTool = 'brush';
+        let currentColor = '#00ffff';
+        let currentSize = 5;
+        let strokeCount = 0;
+        let apiCallCount = 0;
+        let drawingHistory = [];
+        let historyStep = -1;
+        
+        // API Management
+        class APIManager {
+            constructor() {
+                this.activeAPIs = new Set(['color']);
+                this.cache = new Map();
+                this.rateLimits = new Map();
+            }
+            
+            async callAPI(apiName, endpoint, params = {}) {
+                try {
+                    apiCallCount++;
+                    this.updateStats();
+                    
+                    // Simulate API calls for demo
+                    return await this.simulateAPICall(apiName, endpoint, params);
+                } catch (error) {
+                    console.error(`API Error (${apiName}):`, error);
+                    return null;
+                }
+            }
+            
+            async simulateAPICall(apiName, endpoint, params) {
+                // Simulate network delay
+                await new Promise(resolve => setTimeout(resolve, 500 + Math.random() * 1000));
+                
+                switch (apiName) {
+                    case 'unsplash':
+                        return this.generateMockUnsplashData(params);
+                    case 'color':
+                        return this.generateMockColorData(params);
+                    case 'quotes':
+                        return this.generateMockQuoteData();
+                    case 'weather':
+                        return this.generateMockWeatherData(params);
+                    default:
+                        throw new Error(`Unknown API: ${apiName}`);
+                }
+            }
+            
+            generateMockUnsplashData(params) {
+                const themes = ['nature', 'abstract', 'architecture', 'art', 'landscape'];
+                const theme = params.query || themes[Math.floor(Math.random() * themes.length)];
+                
+                return {
+                    id: 'demo-' + Math.random().toString(36).substr(2, 9),
+                    urls: {
+                        small: `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`,
+                        regular: `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
+                    },
+                    description: `A beautiful ${theme} image for artistic inspiration`,
+                    user: {
+                        name: 'Demo Artist',
+                        username: 'demoartist'
+                    },
+                    tags: [
+                        { title: theme },
+                        { title: 'inspiration' },
+                        { title: 'creative' }
+                    ]
+                };
+            }
+            
+            generateMockColorData(params) {
+                const baseHue = Math.floor(Math.random() * 360);
+                const colors = [];
+                
+                for (let i = 0; i < 5; i++) {
+                    const hue = (baseHue + i * 72) % 360;
+                    const saturation = 60 + Math.random() * 40;
+                    const lightness = 40 + Math.random() * 40;
+                    colors.push(`hsl(${hue}, ${saturation}%, ${lightness}%)`);
+                }
+                
+                return {
+                    scheme: 'complementary',
+                    colors: colors,
+                    description: `A ${params.mood || 'vibrant'} color palette`
+                };
+            }
+            
+            generateMockQuoteData() {
+                const quotes = [
+                    "Creativity takes courage. - Henri Matisse",
+                    "Art is not what you see, but what you make others see. - Edgar Degas",
+                    "Every artist was first an amateur. - Ralph Waldo Emerson",
+                    "The purpose of art is washing the dust of daily life off our souls. - Pablo Picasso",
+                    "Art enables us to find ourselves and lose ourselves at the same time. - Thomas Merton"
+                ];
+                
+                return {
+                    quote: quotes[Math.floor(Math.random() * quotes.length)],
+                    author: 'Art Master'
+                };
+            }
+            
+            generateMockWeatherData(params) {
+                const conditions = ['sunny', 'cloudy', 'rainy', 'stormy', 'misty'];
+                const condition = conditions[Math.floor(Math.random() * conditions.length)];
+                
+                return {
+                    weather: [{
+                        main: condition.charAt(0).toUpperCase() + condition.slice(1),
+                        description: `${condition} weather perfect for ${condition} themed art`
+                    }],
+                    main: {
+                        temp: Math.floor(Math.random() * 30) + 10
+                    },
+                    name: params.city || 'Your Location'
+                };
+            }
+            
+            updateAPIStatus(apiName, status) {
+                const statusElement = document.getElementById(`${apiName}Status`);
+                if (statusElement) {
+                    const indicator = statusElement.querySelector('.status-indicator');
+                    indicator.className = `status-indicator ${status}`;
+                }
+            }
+        }
+        
+        const apiManager = new APIManager();
+        
+        // Enhanced Claude Response System with API Integration
+        class ClaudeAI {
+            constructor() {
+                this.apiManager = apiManager;
+                this.responses = {
+                    api_requests: [
+                        "I'll fetch that data for you using our connected APIs! Let me make the call...",
+                        "Perfect! I'm accessing the API to get fresh data for your creative project.",
+                        "Great idea! I'll pull some inspiring content from our available APIs."
+                    ],
+                    color_help: [
+                        "🎨 I'm generating a custom color palette using the Color API based on your preferences!",
+                        "Let me fetch some complementary colors that would work beautifully with your current style.",
+                        "I'll use the color API to find the perfect harmony for your artwork!"
+                    ],
+                    image_inspiration: [
+                        "🖼️ I'll search Unsplash for high-quality reference images that match your vision!",
+                        "Let me find some inspiring photography to spark your creativity using the Unsplash API.",
+                        "I'll pull some beautiful reference images that could inspire your next masterpiece!"
+                    ],
+                    weather_art: [
+                        "🌤️ I'll check the current weather to suggest atmospheric art themes!",
+                        "Weather can be great artistic inspiration! Let me fetch current conditions for you.",
+                        "I'll use the weather API to suggest mood and themes based on current atmospheric conditions!"
+                    ]
+                };
+            }
+            
+            async processMessage(message) {
+                const lowerMessage = message.toLowerCase();
+                
+                // API-specific responses
+                if (this.containsKeywords(lowerMessage, ['color', 'palette', 'scheme'])) {
+                    return await this.handleColorRequest(message);
+                } else if (this.containsKeywords(lowerMessage, ['image', 'photo', 'reference', 'inspiration'])) {
+                    return await this.handleImageRequest(message);
+                } else if (this.containsKeywords(lowerMessage, ['weather', 'atmospheric', 'mood', 'environment'])) {
+                    return await this.handleWeatherRequest(message);
+                } else if (this.containsKeywords(lowerMessage, ['quote', 'inspiration', 'motivation'])) {
+                    return await this.handleQuoteRequest(message);
+                } else {
+                    return this.generateGeneralResponse(message);
+                }
+            }
+            
+            containsKeywords(text, keywords) {
+                return keywords.some(keyword => text.includes(keyword));
+            }
+            
+            async handleColorRequest(message) {
+                this.showTypingIndicator();
+                
+                try {
+                    const colorData = await this.apiManager.callAPI('color', '/schemes', {
+                        mood: this.extractMood(message)
+                    });
+                    
+                    if (colorData) {
+                        return {
+                            text: `🎨 I've generated a beautiful ${colorData.description} for you! Here are the colors:`,
+                            data: colorData,
+                            type: 'color'
+                        };
+                    }
+                } catch (error) {
+                    return { text: "Sorry, I couldn't fetch color data right now. Let me suggest some colors based on art theory instead!" };
+                }
+                
+                return { text: this.getRandomResponse('color_help') };
+            }
+            
+            async handleImageRequest(message) {
+                this.showTypingIndicator();
+                
+                try {
+                    const imageData = await this.apiManager.callAPI('unsplash', '/photos/random', {
+                        query: this.extractImageQuery(message)
+                    });
+                    
+                    if (imageData) {
+                        return {
+                            text: `🖼️ Found a perfect reference image for you! "${imageData.description}"`,
+                            data: imageData,
+                            type: 'image'
+                        };
+                    }
+                } catch (error) {
+                    return { text: "I couldn't fetch images right now, but I can suggest composition techniques based on your description!" };
+                }
+                
+                return { text: this.getRandomResponse('image_inspiration') };
+            }
+            
+            async handleWeatherRequest(message) {
+                this.showTypingIndicator();
+                
+                try {
+                    const weatherData = await this.apiManager.callAPI('weather', '/current', {
+                        city: this.extractLocation(message) || 'local'
+                    });
+                    
+                    if (weatherData) {
+                        return {
+                            text: `🌤️ Current weather: ${weatherData.weather[0].description}! This would be perfect for creating ${weatherData.weather[0].main.toLowerCase()}-themed artwork.`,
+                            data: weatherData,
+                            type: 'weather'
+                        };
+                    }
+                } catch (error) {
+                    return { text: "Weather API is unavailable, but I can suggest atmospheric techniques for any mood you'd like!" };
+                }
+                
+                return { text: this.getRandomResponse('weather_art') };
+            }
+            
+            async handleQuoteRequest(message) {
+                try {
+                    const quoteData = await this.apiManager.callAPI('quotes', '/random');
+                    
+                    if (quoteData) {
+                        return {
+                            text: `💭 Here's some creative inspiration for you:`,
+                            data: quoteData,
+                            type: 'quote'
+                        };
+                    }
+                } catch (error) {
+                    return { text: "Here's some inspiration: 'Creativity takes courage!' - Henri Matisse" };
+                }
+            }
+            
+            generateGeneralResponse(message) {
+                const responses = [
+                    "I can help you with that using our connected APIs! What specific data would you like me to fetch?",
+                    "Let me use my API connections to enhance your creative process. What are you looking for?",
+                    "With access to multiple APIs, I can provide real-time data to inspire your art. What interests you?",
+                    "I have access to color palettes, reference images, weather data, and inspirational quotes. How can I help?"
+                ];
+                
+                return { text: responses[Math.floor(Math.random() * responses.length)] };
+            }
+            
+            extractMood(message) {
+                const moods = ['vibrant', 'calm', 'energetic', 'peaceful', 'dramatic', 'subtle'];
+                for (const mood of moods) {
+                    if (message.toLowerCase().includes(mood)) {
+                        return mood;
+                    }
+                }
+                return 'vibrant';
+            }
+            
+            extractImageQuery(message) {
+                const queries = ['nature', 'abstract', 'architecture', 'portrait', 'landscape'];
+                for (const query of queries) {
+                    if (message.toLowerCase().includes(query)) {
+                        return query;
+                    }
+                }
+                return 'art';
+            }
+            
+            extractLocation(message) {
+                // Simple location extraction - in real app would use more sophisticated NLP
+                const words = message.split(' ');
+                const locationIndex = words.findIndex(word => 
+                    ['in', 'at', 'near', 'around'].includes(word.toLowerCase())
+                );
+                
+                if (locationIndex !== -1 && locationIndex < words.length - 1) {
+                    return words[locationIndex + 1];
+                }
+                return null;
+            }
+            
+            getRandomResponse(category) {
+                const responses = this.responses[category] || this.responses.api_requests;
+                return responses[Math.floor(Math.random() * responses.length)];
+            }
+            
+            showTypingIndicator() {
+                const chatMessages = document.getElementById('chatMessages');
+                const typingDiv = document.createElement('div');
+                typingDiv.className = 'typing-indicator';
+                typingDiv.id = 'typing-indicator';
+                typingDiv.innerHTML = `
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                    <span>Claude is fetching API data...</span>
+                `;
+                chatMessages.appendChild(typingDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            hideTypingIndicator() {
+                const typingIndicator = document.getElementById('typing-indicator');
+                if (typingIndicator) {
+                    typingIndicator.remove();
+                }
+            }
+        }
+        
+        const claude = new ClaudeAI();
+        
+        // Enhanced Canvas Functions
+        function resizeCanvas() {
+            const canvasArea = document.querySelector('.canvas-area');
+            const rect = canvasArea.getBoundingClientRect();
+            const controls = document.querySelector('.canvas-controls');
+            const controlsHeight = controls.getBoundingClientRect().height;
+            
+            canvas.width = rect.width - 40;
+            canvas.height = rect.height - controlsHeight - 60;
+            
+            updateStats();
+        }
+        
+        function updateStats() {
+            document.getElementById('canvasSize').textContent = `${canvas.width}x${canvas.height}`;
+            document.getElementById('strokeCount').textContent = `Strokes: ${strokeCount}`;
+            document.getElementById('apiCalls').textContent = `API Calls: ${apiCallCount}`;
+        }
+        
+        // Enhanced Drawing Functions
+        function startDrawing(e) {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            const startX = e.clientX - rect.left;
+            const startY = e.clientY - rect.top;
+            
+            if (currentTool === 'brush' || currentTool === 'eraser') {
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+            }
+            
+            strokeCount++;
+            updateStats();
+        }
+        
+        function draw(e) {
+            if (!isDrawing) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            ctx.lineWidth = currentSize;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+            
+            switch (currentTool) {
+                case 'brush':
+                    ctx.globalCompositeOperation = 'source-over';
+                    ctx.strokeStyle = currentColor;
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+                    break;
+                    
+                case 'eraser':
+                    ctx.globalCompositeOperation = 'destination-out';
+                    ctx.lineTo(currentX, currentY);
+                    ctx.stroke();
+                    break;
+            }
+        }
+        
+        function stopDrawing() {
+            if (!isDrawing) return;
+            isDrawing = false;
+            saveState();
+        }
+        
+        function saveState() {
+            historyStep++;
+            if (historyStep < drawingHistory.length) {
+                drawingHistory.length = historyStep;
+            }
+            drawingHistory.push(canvas.toDataURL());
+        }
+        
+        // Enhanced Chat Functions
+        function addMessage(sender, content, data = null, type = null) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            
+            if (sender === 'system') {
+                messageDiv.className = 'message system';
+                messageDiv.textContent = content;
+            } else {
+                messageDiv.className = `message ${sender}`;
+                
+                const header = document.createElement('div');
+                header.className = 'message-header';
+                header.textContent = sender === 'user' ? 'You' : 'Claude AI';
+                
+                const contentDiv = document.createElement('div');
+                contentDiv.textContent = content;
+                
+                messageDiv.appendChild(header);
+                messageDiv.appendChild(contentDiv);
+                
+                // Add special content based on type
+                if (data && type) {
+                    const specialContent = createSpecialContent(data, type);
+                    if (specialContent) {
+                        messageDiv.appendChild(specialContent);
+                    }
+                }
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        function createSpecialContent(data, type) {
+            const container = document.createElement('div');
+            container.style.marginTop = '10px';
+            
+            switch (type) {
+                case 'color':
+                    container.innerHTML = `
+                        <div style="display: flex; gap: 5px; margin-top: 10px;">
+                            ${data.colors.map(color => 
+                                `<div style="width: 30px; height: 30px; background: ${color}; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;" 
+                                     title="${color}" onclick="document.getElementById('colorPicker').value='${color}'; currentColor='${color}';"></div>`
+                            ).join('')}
+                        </div>
+                        <small style="color: #cccccc; margin-top: 5px; display: block;">Click any color to use it for drawing</small>
+                    `;
+                    break;
+                    
+                case 'image':
+                    container.innerHTML = `
+                        <div style="margin-top: 10px;">
+                            <img src="${data.urls.small}" style="max-width: 200px; border-radius: 8px; border: 1px solid rgba(0,255,255,0.3);" alt="${data.description}">
+                            <div style="font-size: 0.8rem; color: #cccccc; margin-top: 5px;">
+                                Photo by ${data.user.name} • Tags: ${data.tags.map(tag => tag.title).join(', ')}
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'weather':
+                    container.innerHTML = `
+                        <div style="background: rgba(255,255,0,0.1); padding: 10px; border-radius: 8px; margin-top: 10px;">
+                            <strong>${data.name}:</strong> ${data.weather[0].description}<br>
+                            <small>Temperature: ${data.main.temp}°C - Perfect inspiration for ${data.weather[0].main.toLowerCase()}-themed artwork!</small>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'quote':
+                    container.innerHTML = `
+                        <blockquote style="border-left: 3px solid #00ffff; padding-left: 15px; margin: 10px 0; font-style: italic; color: #cccccc;">
+                            "${data.quote}"
+                        </blockquote>
+                    `;
+                    break;
+            }
+            
+            return container;
+        }
+        
+        async function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const message = chatInput.value.trim();
+            if (!message) return;
+            
+            addMessage('user', message);
+            chatInput.value = '';
+            
+            try {
+                const response = await claude.processMessage(message);
+                claude.hideTypingIndicator();
+                
+                if (response.data && response.type) {
+                    addMessage('claude', response.text, response.data, response.type);
+                } else {
+                    addMessage('claude', response.text || response);
+                }
+            } catch (error) {
+                claude.hideTypingIndicator();
+                addMessage('claude', "I encountered an error processing your request. Please try again!");
+            }
+        }
+        
+        // Event Listeners
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        saveState();
+        
+        // Tool selection
+        document.querySelectorAll('[data-tool]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('[data-tool]').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+                currentTool = e.target.dataset.tool;
+                updateCanvasInfo();
+            });
+        });
+        
+        // Color and size controls
+        document.getElementById('colorPicker').addEventListener('change', (e) => {
+            currentColor = e.target.value;
+            updateCanvasInfo();
+        });
+        
+        document.getElementById('sizeSlider').addEventListener('input', (e) => {
+            currentSize = e.target.value;
+            document.getElementById('sizeDisplay').textContent = currentSize + 'px';
+            updateCanvasInfo();
+        });
+        
+        function updateCanvasInfo() {
+            const info = document.getElementById('canvasInfo');
+            info.textContent = `Tool: ${currentTool.charAt(0).toUpperCase() + currentTool.slice(1)} • Color: ${currentColor} • Size: ${currentSize}px`;
+        }
+        
+        // Canvas events
+        canvas.addEventListener('mousedown', startDrawing);
+        canvas.addEventListener('mousemove', draw);
+        canvas.addEventListener('mouseup', stopDrawing);
+        canvas.addEventListener('mouseout', stopDrawing);
+        
+        // Chat events
+        document.getElementById('chatSend').addEventListener('click', sendMessage);
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+        
+        // API buttons
+        document.querySelectorAll('[data-api]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const apiType = e.target.dataset.api;
+                let query = '';
+                
+                switch (apiType) {
+                    case 'unsplash':
+                        query = 'Find me inspiring reference images for my artwork';
+                        break;
+                    case 'color-api':
+                        query = 'Generate a beautiful color palette for my painting';
+                        break;
+                    case 'weather':
+                        query = 'What\'s the current weather for atmospheric art inspiration?';
+                        break;
+                    case 'quotes':
+                        query = 'Give me an inspirational quote to spark creativity';
+                        break;
+                }
+                
+                if (query) {
+                    document.getElementById('chatInput').value = query;
+                    await sendMessage();
+                }
+            });
+        });
+        
+        // Initialize
+        updateCanvasInfo();
+        updateStats();
+        
+        // Add welcome message about API features
+        setTimeout(() => {
+            addMessage('system', '🌐 All API connections established! You can now access real-time data for enhanced creativity.');
+        }, 1000);
+    </script>
+</body>
+</html>

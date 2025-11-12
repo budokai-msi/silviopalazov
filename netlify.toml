@@ -1,0 +1,55 @@
+[build]
+  publish = "."
+  
+[[redirects]]
+  from = "/ai-automation"
+  to = "/ai-vibe-coders.html"
+  status = 200
+
+[[redirects]]
+  from = "/canvas"
+  to = "/canvas-with-apis.html"
+  status = 200
+
+[[redirects]]
+  from = "/blog"
+  to = "/blog-viewer.html"
+  status = 200
+
+[[redirects]]
+  from = "/automation"
+  to = "/ai-vibe-coders.html"
+  status = 200
+
+[[redirects]]
+  from = "/creative"
+  to = "/canvas-with-apis.html"
+  status = 200
+
+[[redirects]]
+  from = "/research"
+  to = "/blog-viewer.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
