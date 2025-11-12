@@ -1,44 +1,28 @@
 {
-  "name": "silvio-ai-platform",
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "*.html",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
+      "source": "/ai-automation",
+      "destination": "/ai-vibe-coders.html"
     },
     {
-      "src": "/ai-automation",
-      "dest": "/ai-vibe-coders.html"
+      "source": "/canvas",
+      "destination": "/canvas-with-apis.html"
     },
     {
-      "src": "/canvas",
-      "dest": "/canvas-with-apis.html"
+      "source": "/blog",
+      "destination": "/blog-viewer.html"
     },
     {
-      "src": "/blog",
-      "dest": "/blog-viewer.html"
+      "source": "/automation",
+      "destination": "/ai-vibe-coders.html"
     },
     {
-      "src": "/automation",
-      "dest": "/ai-vibe-coders.html"
+      "source": "/creative",
+      "destination": "/canvas-with-apis.html"
     },
     {
-      "src": "/creative",
-      "dest": "/canvas-with-apis.html"
-    },
-    {
-      "src": "/research",
-      "dest": "/blog-viewer.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/research",
+      "destination": "/blog-viewer.html"
     }
   ],
   "headers": [
@@ -56,10 +40,6 @@
         {
           "key": "X-XSS-Protection",
           "value": "1; mode=block"
-        },
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
