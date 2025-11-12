@@ -41,6 +41,7 @@
             width: 100%;
             height: 100%;
             z-index: 0;
+            pointer-events: none;
         }
 
         /* Main Container */
@@ -346,10 +347,10 @@
     <nav>
         <div class="logo">SILVIO PALAZOV</div>
         <div class="nav-links">
-            <a href="#" class="nav-link">Home</a>
-            <a href="#" class="nav-link">AI Automation</a>
-            <a href="#" class="nav-link">Canvas</a>
-            <a href="#" class="nav-link">Research</a>
+            <a href="index.html" class="nav-link">Home</a>
+            <a href="ai-vibe-coders.html" class="nav-link">AI Automation</a>
+            <a href="canvas-with-apis.html" class="nav-link">Canvas</a>
+            <a href="blog-viewer.html" class="nav-link">Research</a>
         </div>
     </nav>
 
@@ -363,8 +364,8 @@
                 technology that transforms how you work and create.
             </p>
             <div class="hero-cta">
-                <button class="btn btn-primary">Get Started</button>
-                <button class="btn btn-secondary">Learn More</button>
+                <button class="btn btn-primary" onclick="window.location.href='ai-vibe-coders.html'">Get Started</button>
+                <button class="btn btn-secondary" onclick="document.querySelector('.features').scrollIntoView({behavior: 'smooth'})">Learn More</button>
             </div>
         </section>
 
