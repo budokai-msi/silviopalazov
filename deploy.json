@@ -1,0 +1,87 @@
+{
+  "name": "silvio-ai-innovation-platform",
+  "version": "1.0.0",
+  "description": "AI-powered workflow automation and creative canvas platform by Silvio Palazov",
+  "main": "index.html",
+  "scripts": {
+    "deploy:vercel": "vercel --prod",
+    "deploy:netlify": "netlify deploy --prod --dir=.",
+    "deploy:surge": "surge . silvio-ai-platform.surge.sh",
+    "serve": "python -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/silvio-ai-platform.git"
+  },
+  "keywords": [
+    "AI",
+    "workflow-automation",
+    "canvas",
+    "creative-tools",
+    "enterprise-solutions",
+    "silvio-palazov"
+  ],
+  "author": "Silvio Palazov",
+  "license": "MIT",
+  "homepage": "https://silvio-ai-platform.vercel.app",
+  "vercel": {
+    "rewrites": [
+      {
+        "source": "/ai-automation",
+        "destination": "/ai-vibe-coders.html"
+      },
+      {
+        "source": "/canvas",
+        "destination": "/canvas-with-apis.html"
+      },
+      {
+        "source": "/blog",
+        "destination": "/blog-viewer.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "/(.*)",
+        "headers": [
+          {
+            "key": "X-Frame-Options",
+            "value": "SAMEORIGIN"
+          },
+          {
+            "key": "X-Content-Type-Options",
+            "value": "nosniff"
+          },
+          {
+            "key": "X-XSS-Protection",
+            "value": "1; mode=block"
+          }
+        ]
+      }
+    ]
+  },
+  "netlify": {
+    "redirects": [
+      {
+        "from": "/ai-automation",
+        "to": "/ai-vibe-coders.html",
+        "status": 200
+      },
+      {
+        "from": "/canvas",
+        "to": "/canvas-with-apis.html", 
+        "status": 200
+      },
+      {
+        "from": "/blog",
+        "to": "/blog-viewer.html",
+        "status": 200
+      }
+    ],
+    "headers": {
+      "/*": {
+        "X-Frame-Options": "SAMEORIGIN",
+        "X-Content-Type-Options": "nosniff"
+      }
+    }
+  }
+}
