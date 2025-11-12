@@ -543,18 +543,18 @@
                 color = mix(color, color3, mixFactor2);
 
                 // Add noise variation
-                color += combinedNoise * 0.15;
+                color += combinedNoise * 0.3;
 
                 // Add mouse glow effect
-                vec3 mouseGlow = vec3(1.0, 1.0, 1.0) * mouseInfluence * 0.2;
+                vec3 mouseGlow = vec3(1.5, 1.5, 1.5) * mouseInfluence * 0.5;
                 color += mouseGlow;
 
-                // Vignette effect for depth
-                float vignette = 1.0 - length(uv - 0.5) * 0.8;
+                // Vignette effect for depth (reduced)
+                float vignette = 1.0 - length(uv - 0.5) * 0.3;
                 color *= vignette;
 
-                // Final opacity with smooth falloff, brighter near mouse
-                float alpha = 0.15 + combinedNoise * 0.05 + mouseInfluence * 0.1;
+                // Much higher opacity for visible smoke effect
+                float alpha = 0.5 + combinedNoise * 0.2 + mouseInfluence * 0.3;
 
                 gl_FragColor = vec4(color, alpha);
             }
