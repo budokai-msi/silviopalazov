@@ -1,0 +1,22 @@
+{
+  "name": "budoai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "budoai.js",
+  "type": "module",
+  "bin": {
+    "budoai": "./budoai.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^14.0.2",
+    "execa": "^9.6.0",
+    "inquirer": "^8.2.4"
+  }
+}

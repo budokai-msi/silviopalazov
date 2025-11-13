@@ -1,0 +1,20 @@
+[
+  {
+    "name": "Claude",
+    "command": "cloude",
+    "color": "#FFA500",
+    "features": ["text-generation"]
+  },
+  {
+    "name": "Codex",
+    "command": "codex",
+    "color": "white",
+    "features": ["text-generation", "code-generation"]
+  },
+  {
+    "name": "Gemini",
+    "command": "gemini",
+    "color": "blue",
+    "features": ["text-generation", "web-search"]
+  }
+]
