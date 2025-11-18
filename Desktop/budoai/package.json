@@ -17,6 +17,6 @@
     "chalk": "^4.1.2",
     "commander": "^14.0.2",
     "execa": "^9.6.0",
-    "inquirer": "^8.2.4"
+    "inquirer": "^8.2.7"
   }
 }
