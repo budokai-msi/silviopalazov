@@ -29,22 +29,20 @@
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
-        /* WebGL Canvas */
         #webgl-canvas {
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             z-index: 0;
             pointer-events: none;
+            display: block;
         }
-        /* Main Container */
         .container {
             position: relative;
             z-index: 10;
         }
-        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -98,7 +96,6 @@
         .nav-link:hover::after {
             width: 100%;
         }
-        /* Hero Section */
         .hero {
             min-height: 100vh;
             display: flex;
@@ -154,7 +151,6 @@
             position: relative;
             overflow: hidden;
         }
-        /* Glass Button Style */
         .btn-glass {
             background: rgba(255,255,255,0.07);
             border: 1.5px solid rgba(255,255,255,0.22);
@@ -170,7 +166,6 @@
             box-shadow: 0 12px 54px 0 rgba(31,38,135, 0.24);
             color: #fff;
         }
-        /* Optional: glass effect also to secondary if wanted */
         .btn-secondary {
             background: rgba(255, 255, 255, 0.05);
             color: #fff;
@@ -182,7 +177,6 @@
             background: rgba(255, 255, 255, 0.1);
             border-color: rgba(255, 255, 255, 0.2);
         }
-        /* Features Section */
         .features {
             padding: 160px 64px;
             max-width: 1400px;
@@ -234,7 +228,6 @@
             color: rgba(255, 255, 255, 0.5);
             letter-spacing: -0.01em;
         }
-        /* Stats Section */
         .stats {
             padding: 160px 64px;
             max-width: 1200px;
@@ -269,7 +262,6 @@
             letter-spacing: 0.1em;
             color: rgba(255, 255, 255, 0.4);
         }
-        /* Animations */
         @keyframes fadeInUp {
             to {
                 opacity: 1;
@@ -282,26 +274,33 @@
                 transform: scale(1);
             }
         }
-        /* Responsive */
         @media (max-width: 768px) {
             nav {
-                padding: 24px 32px;
+                padding: 24px 16px;
             }
             .nav-links {
-                gap: 24px;
+                gap: 20px;
             }
             .hero {
-                padding: 100px 32px 32px;
+                padding: 70px 12px 12px;
             }
             .features,
             .stats {
-                padding: 100px 32px;
+                padding: 56px 8px;
             }
             .features-grid {
                 grid-template-columns: 1fr;
             }
             .feature-card {
-                padding: 32px;
+                padding: 24px;
+            }
+            .btn,
+            .btn-glass {
+                font-size: 16px;
+                padding: 14px 22px;
+                border-radius: 10px;
+                min-width: 120px;
+                min-height: 44px;
             }
         }
     </style>
@@ -321,7 +320,6 @@
     </nav>
     <!-- Main Container -->
     <div class="container">
-        <!-- Hero Section -->
         <section class="hero">
             <h1 class="hero-title">Innovation<br>Unleashed</h1>
             <p class="hero-subtitle">
@@ -329,12 +327,10 @@
                 technology that transforms how you work and create.
             </p>
             <div class="hero-cta">
-                <!-- Added .btn-glass here! -->
                 <button class="btn btn-glass" onclick="window.location.href='ai-vibe-coders.html'">Get Started</button>
                 <button class="btn btn-secondary" onclick="document.querySelector('.features').scrollIntoView({behavior: 'smooth'})">Learn More</button>
             </div>
         </section>
-        <!-- Features Section -->
         <section class="features">
             <div class="features-grid">
                 <div class="feature-card">
@@ -363,7 +359,6 @@
                 </div>
             </div>
         </section>
-        <!-- Stats Section -->
         <section class="stats">
             <div class="stat-card">
                 <span class="stat-number" data-target="847">0</span>
@@ -383,7 +378,6 @@
             </div>
         </section>
     </div>
-    <!-- Three.js Library (Open Source) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         // ==================== THREE.JS WEBGL SCENE ====================
@@ -474,10 +468,9 @@
             side: THREE.DoubleSide
         });
         // Create large plane mesh for background
-        const geometry = new THREE.PlaneGeometry(20, 20, 64, 64);
+        const geometry = new THREE.PlaneGeometry(20, 20, window.innerWidth < 800 ? 32 : 64, window.innerWidth < 800 ? 32 : 64);
         const mesh = new THREE.Mesh(geometry, shaderMaterial);
         scene.add(mesh);
-        // Add multiple layers for depth
         const mesh2 = mesh.clone();
         mesh2.position.z = -2;
         mesh2.rotation.z = Math.PI / 6;
@@ -486,7 +479,6 @@
         mesh3.position.z = -4;
         mesh3.rotation.z = -Math.PI / 6;
         scene.add(mesh3);
-        // ==================== ANIMATION LOOP ====================
         let time = 0;
         function animate() {
             requestAnimationFrame(animate);
@@ -501,14 +493,12 @@
             renderer.render(scene, camera);
         }
         animate();
-        // ==================== RESIZE HANDLER ====================
         window.addEventListener('resize', () => {
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
             shaderMaterial.uniforms.resolution.value.set(window.innerWidth, window.innerHeight);
         });
-        // ==================== SCROLL ANIMATIONS ====================
         const observerOptions = {
             threshold: 0.15,
             rootMargin: '0px 0px -100px 0px'
@@ -524,7 +514,6 @@
         document.querySelectorAll('.feature-card, .stat-card').forEach(el => {
             observer.observe(el);
         });
-        // ==================== COUNTER ANIMATION ====================
         function animateCounter(element) {
             const target = parseFloat(element.getAttribute('data-target'));
             const duration = 2000;
@@ -555,7 +544,6 @@
         document.querySelectorAll('.stat-card').forEach(el => {
             statsObserver.observe(el);
         });
-        // ==================== MOUSE MOVEMENT INTERACTION ====================
         let mouseX = 0;
         let mouseY = 0;
         document.addEventListener('mousemove', (e) => {
